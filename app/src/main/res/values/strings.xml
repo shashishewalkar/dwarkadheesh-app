@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Dwarkadheesh</string>
+
+    <string name="empty_field">This field cannot be empty</string>
+    <string name="invalid_password">Password is invalid</string>
+    <string name="invalid_email">Email Address is invalid</string>
+    <string name="password_dont_match">Passwords do not match</string>
+    <string name="invalid_contact">Contact number should be of 10 digits</string>
+
+    <string-array name="quantity">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
