@@ -79,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_cart:
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new CartFragment()).commit();
                         break;
+                    case R.id.nav_account:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new AccountFragment()).commit();
+                        break;
                 }
 
                 return true;
