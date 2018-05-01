@@ -2,7 +2,7 @@ package test.e_commerceapp;
 
 public class ItemData {
     public String name, desc, image, id;
-    long price;
+    int price;
 
     public String getName() {
         return name;
@@ -12,7 +12,7 @@ public class ItemData {
         return desc;
     }
 
-    public long getPrice() {
+    public int getPrice() {
         return price;
     }
 
@@ -27,7 +27,7 @@ public class ItemData {
     public ItemData() {
     }
 
-    public ItemData(String name, String desc, long price, String image, String id) {
+    public ItemData(String name, String desc, int price, String image, String id) {
 
         this.name = name;
 

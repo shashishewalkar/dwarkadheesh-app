@@ -1,7 +1,9 @@
 package test.e_commerceapp;
 
+import android.app.ProgressDialog;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -63,26 +65,36 @@ public class MainActivity extends AppCompatActivity {
                 // close drawer when item is tapped
                 drawerLayout.closeDrawers();
 
+                Fragment fragment = null;
                 switch (item.getItemId()) {
                     case R.id.nav_home:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new HomeFragment()).commit();
+                        fragment = new HomeFragment();
+                        break;
+                    case R.id.nav_register:
+                        fragment = new RegisterFragment();
+                        break;
+                    case R.id.nav_sign_in:
+                        fragment = new SignInFragment();
+                        break;
+                    case R.id.nav_cart:
+                        fragment = new CartFragment();
+                        break;
+                    case R.id.nav_account:
+                        fragment = new AccountFragment();
+                        break;
+                    case R.id.nav_feedback:
+                        fragment = new FeedbackFragment();
+                        break;
+                    case R.id.nav_view_feedback:
+                        fragment = new FeedbackListFragment();
                         break;
                     case R.id.nav_logout:
                         firebaseAuth.signOut();
                         break;
-                    case R.id.nav_register:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new RegisterFragment()).commit();
-                        break;
-                    case R.id.nav_sign_in:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new SignInFragment()).commit();
-                        break;
-                    case R.id.nav_cart:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new CartFragment()).commit();
-                        break;
-                    case R.id.nav_account:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new AccountFragment()).commit();
-                        break;
                 }
+
+                if(fragment != null)
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment).commitAllowingStateLoss();
 
                 return true;
             }
@@ -97,11 +109,19 @@ public class MainActivity extends AppCompatActivity {
         // fetch navigation menu
         navigationMenu = navigationView.getMenu();
 
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading, Please Wait");
+        progressDialog.show();
+
         // authStateListner to login or logout
         firebaseAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
+
                 if (firebaseAuth.getCurrentUser() == null) {
+                    progressDialog.dismiss();
                     // user logged out
                     Toast.makeText(MainActivity.this, "Logged Out", Toast.LENGTH_SHORT).show();
 
@@ -118,14 +138,20 @@ public class MainActivity extends AppCompatActivity {
                     navigationMenu.setGroupVisible(R.id.logout_group, false);
 
                     // set name in action bar
-                    databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                    databaseReference.child("users").child(firebaseAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            try {
-                                String name = dataSnapshot.child(firebaseAuth.getCurrentUser().getUid()).child("name").getValue().toString();
+                            if (dataSnapshot.child("name").getValue() != null) {
+                                String name = dataSnapshot.child("name").getValue().toString();
                                 navHeaderTitle.setText("Welcome, " + name);
-                            } catch (Exception ignored) {
                             }
+                            navigationMenu.setGroupVisible(R.id.admin_group, false);
+                            if (dataSnapshot.child("role").getValue() != null) {
+                                if (dataSnapshot.child("role").getValue().toString().equals("admin")) {
+                                    navigationMenu.setGroupVisible(R.id.admin_group, true);
+                                }
+                            }
+                            progressDialog.dismiss();
                         }
 
                         @Override
